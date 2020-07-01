@@ -1,13 +1,19 @@
 apply plugin: 'com.android.application'
 
+buildscript {
+    repositories {
+        google()
+    }
+}
+
+
 android {
-    compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 26
 
     defaultConfig {
         applicationId "alec.is.awesome.sevenwondersscorecalculator"
-        minSdkVersion 9
-        targetSdkVersion 22
+        minSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }
@@ -20,6 +26,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
 }

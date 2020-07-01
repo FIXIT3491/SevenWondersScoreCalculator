@@ -7,8 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.Enumeration;
 
 
-public class Input extends ActionBarActivity {
+public class Input extends AppCompatActivity {
     int stage = 0;
     int score = 0;
     int gear = 0;

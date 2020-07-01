@@ -3,8 +3,8 @@ package alec.is.awesome.sevenwondersscorecalculator;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +12,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 
-public class ScoreCalculator extends ActionBarActivity {
+public class ScoreCalculator extends AppCompatActivity {
 
     TextView main;
     Expansions type = new Expansions();
