@@ -5,11 +5,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ScoreCalculator extends AppCompatActivity {
@@ -21,6 +25,8 @@ public class ScoreCalculator extends AppCompatActivity {
     CheckBox projects;
     CheckBox babel;
 
+    private static HashMap<String, Integer> scores = new HashMap<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +36,23 @@ public class ScoreCalculator extends AppCompatActivity {
         leaders = (CheckBox) findViewById(R.id.leaders);
         projects = (CheckBox) findViewById(R.id.projects);
         babel = (CheckBox) findViewById(R.id.babel);
+
+        if (savedInstanceState != null){
+            Log.i("7Wonders", "retrieving state");
+            CharSequence scores = savedInstanceState.getString("scores", "");
+            main.setText(scores);
+        }
+
+        updateScoreList();
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("scores", main.getText().toString());
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,14 +83,27 @@ public class ScoreCalculator extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        String original = main.getText().toString();
         try {
             int i = data.getIntExtra("score", -1);
             String s = data.getStringExtra("name");
-            main.setText(original + System.getProperty("line.separator") + s + ": " + i);
+            scores.put(s, i);
         } catch(Exception e){
-            main.setText(original);
+            Log.i("7Wonders", "No data" );
         }
+
+        updateScoreList();
+    }
+
+    private void updateScoreList(){
+        String newLine = System.getProperty("line.separator");
+        StringBuilder sb = new StringBuilder("Scores" + newLine);
+        for (Map.Entry e : scores.entrySet()){
+            sb.append(e.getKey() );
+            sb.append(":");
+            sb.append(e.getValue());
+            sb.append(newLine);
+        }
+        main.setText(sb.toString());
     }
 
     public static class Expansions implements Parcelable{
@@ -135,5 +169,6 @@ public class ScoreCalculator extends AppCompatActivity {
         projects.setChecked(false);
         leaders.setChecked(false);
         cities.setChecked(false);
+        scores.clear();
     }
 }

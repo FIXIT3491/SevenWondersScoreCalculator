@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 
 public class Input extends AppCompatActivity {
@@ -34,6 +35,7 @@ public class Input extends AppCompatActivity {
     TextView text;
     ImageView img;
     ScoreCalculator.Expansions type = new ScoreCalculator.Expansions();
+    HashMap<Integer, Integer> scoreValues = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,118 +89,187 @@ public class Input extends AppCompatActivity {
         return bitmap;
     }
 
-    public void submit(View view){
+    @Override
+    public void onBackPressed(){
+        if (stage == 0){
+            super.onBackPressed();
+        }
+        stage--;
+        selectImages();
+    }
+
+    private void selectImages(){
         Bitmap bit = null;
         switch (stage){
-            case 0: name = input.getText().toString();
+            case 0:
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                text.setText("Name");
+                break;
+            case 1:
                 input.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
                 text.setText("VP Military");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card1);
                 break;
-            case 1: score += getNum(input);
+            case 2:
                 text.setText("# of Coins");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card2);
                 break;
-            case 2: score += ((getNum(input) < 0)? getNum(input) : getNum(input) / 3);
+            case 3:
                 text.setText("VP Stages of Wonder");
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                //bit = BitmapFactory.decodeResource(getResources(), R.drawable.coolio);
                 break;
-            case 3: score += getNum(input);
+            case 4:
                 text.setText("VP Blue Cards");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card4);
                 break;
-            case 4: score += getNum(input);
+            case 5:
                 text.setText("VP Yellow Cards");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card5);
                 break;
-            case 5: score += getNum(input);
+            case 6:
                 text.setText("Science Gears");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card6);
                 break;
-            case 6: gear = getNum(input);
+            case 7:
                 text.setText("Science Compass");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card7);
                 break;
-            case 7: compass = getNum(input);
+            case 8:
                 text.setText("Science Clay Tablet");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card8);
                 break;
-            case 8: clay = getNum(input);
+            case 9:
                 text.setText("VP Purple Cards");
                 bit = BitmapFactory.decodeResource(getResources(), R.drawable.card9);
                 break;
-            case 9: score += getNum(input);
-                if(!type.projects && !type.babel && !type.leaders && !type.cities) {
-                    doScience(7);
-                    end();
-                }
+            case 10:
                 if(type.cities){
                     text.setText("VP Black Cards");
                     bit = BitmapFactory.decodeResource(getResources(), R.drawable.card10);
                     break;
                 }
+            case 11:
+                if(type.leaders){
+                    text.setText("VP Leaders");
+                    bit = BitmapFactory.decodeResource(getResources(), R.drawable.card11);
+                    break;
+                }
+            case 12:
+                if(type.babel){
+                    text.setText("Babel Tiles");
+                    break;
+                }
+            case 13:
+                if(type.projects) {
+                    text.setText("VP from projects");
+                    break;
+                }
+            case 14:
+                if(type.projects) {
+                    text.setText("Project Science Token");
+                    bit = BitmapFactory.decodeResource(getResources(), R.drawable.card12);
+                    break;
+                }
+        }
+        input.setText("");
+        img.setImageBitmap(bit);
+    }
+
+    public void submit(View view){
+        switch (stage){
+            case 0: name = input.getText().toString();
+                break;
+            case 1:
+                scoreValues.put(stage, getNum(input));
+                break;
+            case 2:
+                scoreValues.put(stage, ((getNum(input) < 0)? getNum(input) : getNum(input) / 3));
+                break;
+            case 3:
+                scoreValues.put(stage, getNum(input));
+                break;
+            case 4:
+                scoreValues.put(stage, getNum(input));
+                break;
+            case 5:
+                scoreValues.put(stage, getNum(input));
+                break;
+            case 6: gear = getNum(input);
+                break;
+            case 7: compass = getNum(input);
+                break;
+            case 8: clay = getNum(input);
+                break;
+            case 9:
+                scoreValues.put(stage, getNum(input));
+                if(!type.projects && !type.babel && !type.leaders && !type.cities) {
+                    scoreValues.put(-1, doScience(7));
+                    end();
+                }
+                if(type.cities){
+                    break;
+                }
             case 10:
                 if(type.leaders){
-                    score += getNum(input);
-                    text.setText("VP Leaders");
+                    scoreValues.put(stage, getNum(input));
                     stage = 10;
-                    bit = BitmapFactory.decodeResource(getResources(), R.drawable.card11);
                     break;
                 }
             case 11:
                 if(type.babel){
-                    score += getNum(input);
-                    text.setText("Babel Tiles");
+                    scoreValues.put(-1, doScience(7));
+
+                    scoreValues.put(stage, getNum(input));
                     stage = 11;
                     break;
                 }
             case 12:
                 if(type.projects) {
-                    score += (type.babel)? getNum(input) * 2 : getNum(input);
-                    text.setText("VP from projects");
+                    scoreValues.put(stage, (type.babel)? getNum(input) * 2 : getNum(input));
                     stage = 12;
                     break;
                 }
-            case 13: score += (type.babel)? getNum(input) * 2 : getNum(input);
+            case 13:
+                scoreValues.put(stage, (type.babel)? getNum(input) * 2 : getNum(input));
                 if(type.projects) {
-                    text.setText("Project Science Token");
-                    bit = BitmapFactory.decodeResource(getResources(), R.drawable.card12);
                     stage = 13;
                     break;
                 } else {
-                    doScience(7);
+                    scoreValues.put(-1, doScience(7));
                     end();
                 }
             case 14:
                 if(type.projects){
                     int i = getNum(input);
-                    doScience(i * 3 + 7);
+                    scoreValues.put(-1, doScience(i * 3 + 7));
                 } else {
-                    score += (type.babel)? getNum(input) * 2 : getNum(input);
+                    scoreValues.put(stage, (type.babel)? getNum(input) * 2 : getNum(input));
                 }
                 end();
         }
-        img.setImageBitmap(bit);
-        input.setText("");
         stage++;
+        selectImages();
     }
 
-    public void doScience(int mult){
-        score += clay * clay;
-        score += compass * compass;
-        score += gear * gear;
+    public int doScience(int mult){
+        int iscore = clay * clay;
+        iscore += compass * compass;
+        iscore += gear * gear;
         if(gear <= compass && gear <= clay){
-            score += mult * gear;
+            iscore += mult * gear;
         } else if(compass <= gear && compass <= clay){
-            score += mult * compass;
+            iscore += mult * compass;
         } else {
-            score += mult * clay;
+            iscore += mult * clay;
         }
+        return iscore;
     }
 
     public void end(){
         Intent i = new Intent();
+        for (Integer integer : scoreValues.values()){
+            score += integer;
+        }
         i.putExtra("score", score);
         i.putExtra("name", name);
         setResult(0, i);
